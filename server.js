@@ -70,5 +70,5 @@ if (require.main === module) {
     });
 }
 
-// PENTING: Export app agar Vercel bisa menjalankannya
+// WAJIB ADA: Export app agar Vercel bisa membacanya
 module.exports = app;
