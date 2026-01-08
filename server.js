@@ -63,7 +63,12 @@ app.post('/api/generate-bio', async (req, res) => {
     }
 });
 
-// Jalankan Server
-app.listen(port, () => {
-    console.log(`🚀 Server berjalan di http://localhost:${port}`);
-});
+// Jalankan Server (Hanya untuk local dev, abaikan saat di Vercel)
+if (require.main === module) {
+    app.listen(port, () => {
+        console.log(`🚀 Server berjalan di http://localhost:${port}`);
+    });
+}
+
+// PENTING: Export app agar Vercel bisa menjalankannya
+module.exports = app;
