@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BioKilat AI</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap'); body { font-family: 'Inter', sans-serif; }</style>
+</head>
+<body class="bg-slate-100 min-h-screen flex items-center justify-center p-4">
+
+    <div class="bg-white shadow-xl rounded-2xl w-full max-w-4xl overflow-hidden flex flex-col md:flex-row">
+        
+        <div class="w-full md:w-1/2 p-8 bg-white border-r border-slate-100">
+            <h2 class="text-2xl font-bold text-slate-800 mb-6">⚡ BioKilat AI</h2>
+            <form id="bioForm" class="space-y-4">
+                <div><label class="text-sm font-medium text-slate-600">Nama Lengkap</label><input type="text" id="nama" class="w-full px-4 py-2 border rounded-lg" placeholder="Contoh: Budi Santoso"></div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div><label class="text-sm font-medium text-slate-600">Asal</label><input type="text" id="asal" class="w-full px-4 py-2 border rounded-lg" placeholder="Jakarta"></div>
+                    <div><label class="text-sm font-medium text-slate-600">Interest</label><input type="text" id="interest" class="w-full px-4 py-2 border rounded-lg" placeholder="AI & Tech"></div>
+                </div>
+                <div><label class="text-sm font-medium text-slate-600">Hobi</label><input type="text" id="hobi" class="w-full px-4 py-2 border rounded-lg" placeholder="Lari pagi"></div>
+                <div><label class="text-sm font-medium text-slate-600">Kesibukan</label><input type="text" id="kesibukan" class="w-full px-4 py-2 border rounded-lg" placeholder="Skripsi"></div>
+                <div>
+                    <label class="text-sm font-medium text-slate-600">Gaya Bahasa</label>
+                    <select id="tone" class="w-full px-4 py-2 border rounded-lg">
+                        <option value="formal">Profesional</option>
+                        <option value="casual">Santai / Gaul</option>
+                        <option value="witty">Lucu / Unik</option>
+                    </select>
+                </div>
+                <button type="button" onclick="generateBioAI()" id="btnGenerate" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-lg transition">Generate dengan AI ✨</button>
+            </form>
+        </div>
+
+        <div class="w-full md:w-1/2 p-8 bg-slate-50 flex flex-col justify-center">
+            <h3 class="text-lg font-semibold text-slate-700 mb-2">Hasil AI</h3>
+            <textarea id="resultOutput" class="w-full h-48 p-4 bg-white border rounded-xl resize-none" placeholder="Hasil akan muncul di sini..."></textarea>
+        </div>
+    </div>
+
+    <script>
+        async function generateBioAI() {
+            // 1. Ambil Data
+            const data = {
+                nama: document.getElementById('nama').value,
+                asal: document.getElementById('asal').value,
+                interest: document.getElementById('interest').value,
+                hobi: document.getElementById('hobi').value,
+                kesibukan: document.getElementById('kesibukan').value,
+                tone: document.getElementById('tone').value
+            };
+
+            const btn = document.getElementById('btnGenerate');
+            const output = document.getElementById('resultOutput');
+
+            // 2. Loading State
+            btn.disabled = true;
+            btn.innerText = "Sedang Berpikir...";
+            output.value = "AI sedang menyusun kata-kata...";
+
+            try {
+                // 3. Kirim ke Server Lokal Kita (server.js)
+                const response = await fetch('http://localhost:3000/api/generate-bio', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+
+                const result = await response.json();
+
+                // 4. Tampilkan Hasil
+                if (result.success) {
+                    output.value = result.bio;
+                } else {
+                    output.value = "Maaf, terjadi kesalahan: " + result.message;
+                }
+
+            } catch (err) {
+                console.error(err);
+                output.value = "Gagal terhubung ke server. Pastikan server.js sudah jalan!";
+            } finally {
+                btn.disabled = false;
+                btn.innerText = "Generate dengan AI ✨";
+            }
+        }
+    </script>
+</body>
+</html>
